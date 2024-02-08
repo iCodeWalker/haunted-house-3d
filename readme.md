@@ -1,16 +1,5 @@
-# Three.js Journey
+# Haunted House
 
-## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+### IMP : Instead of using random measures we are going to consider 1 unit as 1 meter.
 
-``` bash
-# Install dependencies (only the first time)
-npm install
-
-# Run the local server at localhost:8080
-npm run dev
-
-# Build for production in the dist/ directory
-npm run build
-```
+    THREE.Group() is for grouping different meshes or objects
