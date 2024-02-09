@@ -19,6 +19,17 @@ const scene = new THREE.Scene();
  */
 const textureLoader = new THREE.TextureLoader();
 
+// ### Loading all door texttures
+const doorColorTexture = textureLoader.load("/textures/door/color.jpg");
+const doorAlphaTexture = textureLoader.load("/textures/door/alpha.jpg");
+const doorAmbientOcclusionTexture = textureLoader.load(
+  "/textures/door/ambientOcclusion.jpg"
+);
+const doorHeightTexture = textureLoader.load("/textures/door/height.jpg");
+const doorNormalTexture = textureLoader.load("/textures/door/normal.jpg");
+const doorMetalnessTexture = textureLoader.load("/textures/door/metalness.jpg");
+const doorRoughnessTexture = textureLoader.load("/textures/door/roughness.jpg");
+
 /**
  * House
  */
@@ -51,8 +62,22 @@ house.add(roof);
 // Create a door with a plane.
 
 const door = new THREE.Mesh(
-  new THREE.PlaneGeometry(2, 2),
-  new THREE.MeshStandardMaterial({ color: "#aa7b7b" })
+  new THREE.PlaneGeometry(2.2, 2.2, 100, 100),
+  new THREE.MeshStandardMaterial({
+    map: doorColorTexture,
+    transparent: true,
+    alphaMap: doorAlphaTexture, // with alphaMap we have to use transparent: true
+    aoMap: doorAmbientOcclusionTexture, // for aoMap we need to add uv2 attributes
+    displacementMap: doorHeightTexture, // for displacementMap we need to add more vertices, so we need to increase sub-divissions
+    displacementScale: 0.2,
+    normalMap: doorNormalTexture, // For having shadows in door
+    metalnessMap: doorMetalnessTexture,
+    roughnessMap: doorRoughnessTexture,
+  })
+);
+door.geometry.setAttribute(
+  "uv2",
+  new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
 );
 door.position.y = 1;
 door.position.z = 2 + 0.01;
@@ -121,18 +146,29 @@ scene.add(floor);
  * Lights
  */
 // Ambient light
-const ambientLight = new THREE.AmbientLight("#ffffff", 0.5);
+const ambientLight = new THREE.AmbientLight("#b9d5ff", 0.12);
 gui.add(ambientLight, "intensity").min(0).max(1).step(0.001);
 scene.add(ambientLight);
 
 // Directional light
-const moonLight = new THREE.DirectionalLight("#ffffff", 0.5);
+const moonLight = new THREE.DirectionalLight("#b9d5ff", 0.12);
 moonLight.position.set(4, 5, -2);
 gui.add(moonLight, "intensity").min(0).max(1).step(0.001);
 gui.add(moonLight.position, "x").min(-5).max(5).step(0.001);
 gui.add(moonLight.position, "y").min(-5).max(5).step(0.001);
 gui.add(moonLight.position, "z").min(-5).max(5).step(0.001);
 scene.add(moonLight);
+
+// ############# Door Light ##############
+// Add awarm light above the door and add it to the house instead of the scene
+
+const doorLight = new THREE.PointLight("#ff7d46", 1, 7);
+doorLight.position.set(0, 2.2, 2.7);
+house.add(doorLight);
+
+// ####### Fog #####
+const fog = new THREE.Fog("#262837", 1, 15);
+scene.fog = fog;
 
 /**
  * Sizes
@@ -183,6 +219,8 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setSize(sizes.width, sizes.height);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// Sets the color of the background of the scene
+renderer.setClearColor("#262837");
 
 /**
  * Animate
