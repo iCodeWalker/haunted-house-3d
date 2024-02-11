@@ -87,6 +87,7 @@ const walls = new THREE.Mesh(
     aoMap: bricksAmbientOcclusionTexture,
     normalMap: bricksNormalTexture,
     roughnessMap: bricksRoughnessTexture,
+    side: THREE.DoubleSide,
   })
 );
 
@@ -94,7 +95,7 @@ walls.geometry.setAttribute(
   "uv2",
   new THREE.Float32BufferAttribute(walls.geometry.attributes.uv.array, 2)
 );
-walls.position.y = 1.25;
+walls.position.y = 1.25 + 0.01;
 house.add(walls);
 
 // ################### Roof ######################
@@ -123,6 +124,7 @@ const door = new THREE.Mesh(
     normalMap: doorNormalTexture, // For having shadows in door
     metalnessMap: doorMetalnessTexture,
     roughnessMap: doorRoughnessTexture,
+    side: THREE.DoubleSide,
   })
 );
 door.geometry.setAttribute(
@@ -130,7 +132,7 @@ door.geometry.setAttribute(
   new THREE.Float32BufferAttribute(door.geometry.attributes.uv.array, 2)
 );
 door.position.y = 1;
-door.position.z = 2 + 0.01;
+door.position.z = 1.95;
 house.add(door);
 
 // ################## Add Bushes #################
@@ -269,6 +271,13 @@ scene.add(camera);
 // Controls
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
+// Setting min and max distance for camera
+controls.minDistance = 1;
+controls.maxDistance = 10;
+
+// Setting angle for rotation of camera
+// controls.minPolarAngle = 0;
+// controls.maxPolarAngle = Math.PI * 0.45;
 
 /**
  * Renderer
